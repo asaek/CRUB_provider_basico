@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Esperamos  a que  se inicialice firebase
   await Firebase.initializeApp();
 
   runApp(
@@ -15,6 +17,7 @@ void main() async {
 class AppState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // incluimos el multiprovider al nivel mas alto posible para agregarlo al builtcontext
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => FirebaseProviderCRUB()),
@@ -34,6 +37,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    // cargamos los Strings a la lista desde el provider
     Provider.of<FirebaseProviderCRUB>(context, listen: false).loadStrings();
 
     super.initState();
@@ -77,22 +81,25 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   onTap: () {
-                    print('A por kyary');
+                    // Traigo el objeto<SimpleString> que voy a actualizar
                     final stringUpdate = Provider.of<FirebaseProviderCRUB>(
                             context,
                             listen: false)
                         .getUpdateStringSeletect();
 
+                    // Tambien traigo el texto escrito en el TextField
                     stringUpdate.simpleString =
                         Provider.of<FirebaseProviderCRUB>(context,
                                 listen: false)
                             .getValorEscrito();
 
+                    // y aqui lo mando al metodo que lo subira y lo actualizara en la lista
                     Provider.of<FirebaseProviderCRUB>(context, listen: false)
                         .updateString(stringUpdate);
+
+                    // Limpio el textfield
                     Provider.of<FirebaseProviderCRUB>(context, listen: false)
                         .setTxtController('');
-                    print(stringUpdate);
                   },
                 ),
                 GestureDetector(
@@ -113,14 +120,16 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                   onTap: () {
-                    print('A por kyary');
+                    // leo traigo el valor escrito en el textField
                     final valorEscrito = Provider.of<FirebaseProviderCRUB>(
                             context,
                             listen: false)
                         .getValorEscrito();
 
+                    // envio el texto escrito para su procesamiento al metodo createCampo
                     Provider.of<FirebaseProviderCRUB>(context, listen: false)
                         .createCampo(saveString: valorEscrito);
+                    // Limpio el textFlied
                     Provider.of<FirebaseProviderCRUB>(context, listen: false)
                         .setTxtController('');
                   },
@@ -186,11 +195,13 @@ class ListBuilder extends StatelessWidget {
                           ),
                         ),
                         onTap: () {
-                          print('KPP');
+                          // tomo el valor String simpleString del objeto de la lista listaStrings y
+                          // lo envio al textfield
                           Provider.of<FirebaseProviderCRUB>(context,
                                   listen: false)
                               .setTxtController(
                                   listaStrings[index].simpleString);
+                          // guardo el objeto que se va a editar
                           Provider.of<FirebaseProviderCRUB>(context,
                                   listen: false)
                               .setUpdateStringSeletect(listaStrings[index]);
@@ -213,7 +224,7 @@ class ListBuilder extends StatelessWidget {
                           ),
                         ),
                         onTap: () {
-                          print('KPP');
+                          // Envia el objeto para su elimnacion de la bd y de la lista
                           Provider.of<FirebaseProviderCRUB>(context,
                                   listen: false)
                               .deleteString(deleteString: listaStrings[index]);
@@ -235,6 +246,8 @@ class _TextField extends StatelessWidget {
       autofocus: true,
       keyboardType: TextInputType.number,
       style: const TextStyle(color: Colors.black, fontSize: 30),
+      // Asigamos un TextEditingController para poder tomar control del TextFlied
+      // y asi poder borrar y alterar lo escrito
       controller: Provider.of<FirebaseProviderCRUB>(context, listen: false)
           .getTxtController,
       decoration: const InputDecoration(
@@ -251,6 +264,7 @@ class _TextField extends StatelessWidget {
         ),
       ),
       onChanged: (String texto) {
+        // Cada ves que se escribe o se edita lo escrtio lo mandara a guardar
         Provider.of<FirebaseProviderCRUB>(context, listen: false)
             .setvalorEscrito(texto);
       },
