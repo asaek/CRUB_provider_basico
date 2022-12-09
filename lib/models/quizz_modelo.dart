@@ -1,3 +1,4 @@
+// tenemos los modelos a usar uno es una lista de Strings
 class Pregunta {
   final String pregunta;
   final List<String> opciones;
@@ -9,6 +10,7 @@ class Pregunta {
   });
 }
 
+// En este caso slot ocupara ser null para saber si el usuario respondio alguna respuesta
 class Respuesta {
   int slot;
   int? respuesta;
@@ -41,8 +43,8 @@ final List<Pregunta> preguntas = [
     opcionCorrecta: 3,
   ),
   Pregunta(
-    pregunta: 'Cual es su nombre?',
-    opciones: ['おなまえは？', '〜のしゃいん', 'インドネシア', 'みんなさん'],
+    pregunta: 'Nombre Kyary Pamyu Pamyu?',
+    opciones: ['きゃりぱみゅぱみゅ', '〜のしゃいん', 'インドネシア', 'みんなさん'],
     opcionCorrecta: 0,
   ),
 ];

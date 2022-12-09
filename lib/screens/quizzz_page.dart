@@ -41,11 +41,13 @@ class QuizzPage extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
+                        // traemos el pageController
                         final pageController =
                             Provider.of<QuizzProvider>(context, listen: false)
                                 .getPageController;
-
+                        // Y consultamos en que pagina se encuentra el pageView
                         final paginaactual = pageController.page!.toInt();
+                        // Si no esta en la pagina 0 le pediremos que retroceda una pagina
                         if (paginaactual != 0) {
                           pageController.previousPage(
                               duration: const Duration(milliseconds: 300),
@@ -72,21 +74,25 @@ class QuizzPage extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
+                        // traemos el pageController
                         final pageController =
                             Provider.of<QuizzProvider>(context, listen: false)
                                 .getPageController;
 
+                        // Y consultamos en que pagina se encuentra el pageView
                         final paginaactual = pageController.page!.toInt();
-
+                        //Traemos las respuestas desde nuestros provider
                         final respuestasList =
                             Provider.of<QuizzProvider>(context, listen: false)
                                 .getRespuestas;
-
+                        // si estamos en la pagina final osea 4 mandamos a llamar al metodo y modal _modalCalificaciones
                         if (paginaactual == 4) {
                           print(respuestasList);
+                          // Le mandamos el xontext para poder trabjar con widgets seguir integrando mas
                           _modalCalificaciones(
                               context: context, respuestas: respuestasList);
                         } else {
+                          // avanzaremos de pagina si no se encuentra en la pagina 4
                           pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut);
@@ -109,10 +115,15 @@ class _PageVieBUilder extends StatefulWidget {
   State<_PageVieBUilder> createState() => _PageVieBUilderState();
 }
 
+// Honestamente creo que se podria hacer sin usar StatefulWidget pero lo correcto es usarlo a trabajar con un controlador
+// aun que por ahorro de memoria y la manera correcta se tiene que destruir el controller para ahorrar memoria cuando ya no estas en la pagina
+// donde se utiliza el controller o cuando ya no se nesecite
 class _PageVieBUilderState extends State<_PageVieBUilder> {
+  // declaramos un PageContorller y lo dejamos en late para luego inicializarlo
   late PageController _pageController;
   @override
   void initState() {
+    // traemos y asignamos el pageController del provider
     _pageController =
         Provider.of<QuizzProvider>(context, listen: false).getPageController;
 
@@ -127,6 +138,7 @@ class _PageVieBUilderState extends State<_PageVieBUilder> {
 
   @override
   Widget build(BuildContext context) {
+    // escuchamos los cambios de la respuesta para que se pueda seleccionar y cambie de color la respuesta seleccionada
     final respuestaSeleccionada =
         Provider.of<QuizzProvider>(context, listen: true).getRespuestas;
 
@@ -152,12 +164,12 @@ class _PageVieBUilderState extends State<_PageVieBUilder> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Aqui estoy  reutilizando el boton de cada respuesta y ya solo se le mandan los parametros a usar
                   _RespuestaContainer(
                     index: index,
                     respuestaSeleccionada: respuestaSeleccionada,
                     slotRespuesta: 0,
                   ),
-
                   const SizedBox(
                     width: 10,
                   ),
@@ -214,12 +226,12 @@ class _PageVieBUilderState extends State<_PageVieBUilder> {
                 ),
               ),
               onTap: () {
+                // Creamos un objet Respuesta con los valores
                 final Respuesta respuesta = Respuesta(
                   slot: index,
                   respuesta: null,
                 );
-
-                // _calificarCitaModal(contexts: context);
+                // Giardamos la respuesta seleccionada
                 Provider.of<QuizzProvider>(context, listen: false)
                     .SetRespuestas = respuesta;
               },
@@ -249,6 +261,8 @@ class _RespuestaContainer extends StatelessWidget {
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
+            // aqui hice algunas condiciones ternarias para pintar el boton seleccionado
+            // Una para saber si era null y otra para saber  si lo habian seleccionado
             color: (respuestaSeleccionada[index].respuesta == null)
                 ? Colors.orangeAccent
                 : (respuestaSeleccionada[index].respuesta == slotRespuesta)
@@ -282,12 +296,14 @@ class _RespuestaContainer extends StatelessWidget {
   }
 }
 
+// tenemos el modal
 _modalCalificaciones(
     {required BuildContext context, required List<Respuesta> respuestas}) {
   showDialog(
     context: context,
     // barrierDismissible: true,
     builder: (builder) {
+      // le pedimos que nos retorne un dialog para el uso de las propiedades del scaffolt y del context
       return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
@@ -315,6 +331,9 @@ _modalCalificaciones(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
+                        // Una condicion ternaria es para pintar y cambiar de texto cuando no se selecciono respuesta
+                        // para eso es el null que utilizo en el objeto Respuesta.respuesta
+                        // La otra condicion es para comprar si esta bien o mal la respuesta
                         color: (respuestas[index].respuesta != null)
                             ? (respuestas[index].respuesta ==
                                     preguntas[index].opcionCorrecta)
@@ -371,6 +390,7 @@ _modalCalificaciones(
                 ),
               ),
               onTap: () {
+                // cierra el modal
                 Navigator.pop(context);
               },
             ),
